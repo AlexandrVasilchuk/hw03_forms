@@ -1,9 +1,9 @@
 import datetime
-
+from typing import Any
 from django.http import HttpRequest
 
 
-def year(request: HttpRequest) -> dict[str, int]:
+def year(request: HttpRequest) -> Any:
     """Добавляет переменную с текущим годом.
     Args:
         request: Любой запрос на сайт,
