@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block title %}
-  Профайл пользователя {{ username }}
+  Профайл пользователя {{ author }}
 {% endblock %}
 {% block content %}
   <div class="container py-5">
-    <h1>Все посты пользователя {{ username }} </h1>
-    <h3>Всего постов: {{ page_obj.paginator.count }} </h3>
-    {% for post in page_obj %}
+    <h1>Все посты пользователя {{ author }} </h1>
+    <h3>Всего постов: {{ page.paginator.count }} </h3>
+    {% for post in page %}
 
       {% include "posts/includes/post.html" %}
 
@@ -15,6 +15,6 @@
       {% endif %}
 
     {% endfor %}
-    {% include "posts/includes/paginator.html" %}
+    {% include "includes/paginator.html" %}
   </div>
 {% endblock %}

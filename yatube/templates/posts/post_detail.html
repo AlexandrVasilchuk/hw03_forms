@@ -9,14 +9,13 @@
         <li class="list-group-item">
           Дата публикации: {{ post.pub_date|date:"d E Y" }}
         </li>
-        <!-- если у поста есть группа -->
         {% if post.group %}
-        <li class="list-group-item">
-          Группа: {{ post.group.title }}
-          <a href="{% url 'posts:group_list' post.group.slug %}">
-            все записи группы
-          </a>
-        </li>
+          <li class="list-group-item">
+            Группа: {{ post.group.title }}
+            <a href="{% url 'posts:group_list' post.group.slug %}">
+              все записи группы
+            </a>
+          </li>
         {% endif %}
         <li class="list-group-item">
           Автор: {{ post.author.get_full_name }}
@@ -33,7 +32,7 @@
     </aside>
     <article class="col-12 col-md-9">
       <p>
-       {{ post.text }}
+        {{ post.text }}
       </p>
       {% if request.user.get_username == post.author.get_username %}
         <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">Редактировать запись</a>
