@@ -4,6 +4,7 @@ from posts import views
 from posts.apps import PostsConfig
 
 app_name = PostsConfig.name
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('create/', views.post_create, name='post_create'),

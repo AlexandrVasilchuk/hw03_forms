@@ -1,12 +1,13 @@
-from typing import Any
-
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.http import HttpRequest
 
 
-def paginate(request: HttpRequest, posts: Any) -> Any:
-    paginator = Paginator(posts, settings.LIMIT)
+def paginate(
+    request: HttpRequest,
+    queryset: str,
+    pagesize: int = settings.PAGE_SIZE,
+) -> str:
+    paginator = Paginator(queryset, pagesize)
     page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-    return page
+    return paginator.get_page(page_number)

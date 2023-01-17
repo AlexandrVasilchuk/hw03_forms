@@ -2,7 +2,7 @@
 
 {% block title %}
   Последние обновления на сайте
-{% endblock %}
+{% endblock title %}
 
 {% block content %}
   <h1>
@@ -17,4 +17,4 @@
     {% endif %}
   {% endfor %}
   {% include "includes/paginator.html" %}
-{% endblock %}
+{% endblock content %}

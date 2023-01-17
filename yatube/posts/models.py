@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 User = get_user_model()
+
 FIRST_SYMBOLS = 15
 
 
@@ -9,7 +10,7 @@ class Group(models.Model):
     titlemaxlenght = 200
 
     title = models.CharField('заголовок', max_length=titlemaxlenght)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField('имя группы', unique=True)
     description = models.TextField('описание')
 
     def __str__(self) -> models.CharField:
@@ -34,6 +35,8 @@ class Post(models.Model):
     )
 
     class Meta:
+        verbose_name = 'пост'
+        verbose_name_plural = 'посты'
         ordering = ('-pub_date',)
         default_related_name = 'posts'
 

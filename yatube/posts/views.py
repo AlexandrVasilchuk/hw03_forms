@@ -7,7 +7,7 @@ from core.utils import paginate
 from posts.forms import PostForm
 from posts.models import Group, Post
 
-user_model = get_user_model()
+User = get_user_model()
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -41,8 +41,10 @@ def group_posts(request: HttpRequest, slug: str) -> HttpResponse:
 
 
 def profile(request: HttpRequest, username: str) -> HttpResponse:
-    user = get_object_or_404(user_model, username=username)
-    posts = user.posts.all()
+    user = get_object_or_404(User, username=username)
+    posts = user.posts.select_related(
+        'author',
+    )
     return render(
         request,
         'posts/profile.html',
@@ -82,7 +84,6 @@ def post_create(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def post_edit(request: HttpRequest, pk: int) -> HttpResponse:
-    is_edit = True
     post = get_object_or_404(Post, id=pk)
     form = PostForm(request.POST or None, instance=post)
     if not form.is_valid():
@@ -90,7 +91,7 @@ def post_edit(request: HttpRequest, pk: int) -> HttpResponse:
             request,
             'posts/create_post.html',
             {
-                'is_edit': is_edit,
+                'is_edit': True,
                 'form': form,
             },
         )

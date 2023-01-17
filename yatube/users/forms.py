@@ -11,6 +11,6 @@ class CreationForm(UserCreationForm):
         labels = {
             'first_name': 'Имя',
             'last_name': 'Фамилия',
-            'username': 'Имя пользователя',
+            'username': 'Логин',
             'email': 'Почта',
         }

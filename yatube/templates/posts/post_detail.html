@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}
   {{ post.text|truncatechars:30 }}
-{% endblock %}
+{% endblock title %}
 {% block content %}
   <div class="row">
     <aside class="col-12 col-md-3">
@@ -39,4 +39,4 @@
       {% endif %}
     </article>
   </div>
-{% endblock %}
+{% endblock content %}
