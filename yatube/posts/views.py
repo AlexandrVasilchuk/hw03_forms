@@ -85,6 +85,8 @@ def post_create(request: HttpRequest) -> HttpResponse:
 @login_required
 def post_edit(request: HttpRequest, pk: int) -> HttpResponse:
     post = get_object_or_404(Post, id=pk)
+    if request.user != post.author:
+        return redirect('posts:post_detail', pk)
     form = PostForm(request.POST or None, instance=post)
     if not form.is_valid():
         return render(

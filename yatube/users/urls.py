@@ -7,7 +7,7 @@ from users.views import SignUp
 app_name = UsersConfig.name
 passwords = [
     path(
-        'change/form',
+        'change/form/',
         v.PasswordChangeView.as_view(
             success_url=reverse_lazy('users:password_change_done'),
             template_name='users/password_change.html',
@@ -22,7 +22,7 @@ passwords = [
         name='password_change_done',
     ),
     path(
-        'reset/form',
+        'reset/form/',
         v.PasswordResetView.as_view(
             success_url=reverse_lazy('users:password_reset_done'),
             template_name='users/password_reset_form.html',
@@ -30,7 +30,7 @@ passwords = [
         name='password_reset_form',
     ),
     path(
-        'reset/complete',
+        'reset/complete/',
         v.PasswordResetCompleteView.as_view(
             template_name='users/password_reset_complete.html',
         ),

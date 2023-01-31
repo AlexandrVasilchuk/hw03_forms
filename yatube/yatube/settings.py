@@ -10,7 +10,12 @@ SECRET_KEY = 'vkwgr0u7r^%@#u-s^nho!-nu0ek9f&fd2_&04jk^&%3166ejku'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    'testserver',
+]
 
 INTERNAL_IPS = [
     '127.0.0.1',
