@@ -9,7 +9,7 @@ User = get_user_model()
 
 class PaginatorViewsTest(TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         super().setUpClass()
         cls.user = User.objects.create_user(username='auth')
         cls.group = Group.objects.create(
@@ -28,7 +28,8 @@ class PaginatorViewsTest(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(PaginatorViewsTest.user)
 
-    def test_page_contains_correct_amount_records(self):
+    def test_paginator_separator(self) -> None:
+        """Проверка корректного разделения постов паджинатором"""
         response_values = {
             reverse('posts:index'): 10,
             reverse('posts:index') + '?page=2': 3,

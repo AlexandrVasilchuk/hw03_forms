@@ -10,7 +10,7 @@ User = get_user_model()
 
 class TestViewsPosts(TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         super().setUpClass()
         cls.user = User.objects.create_user(username='test_name')
         cls.group = Group.objects.create(
@@ -23,16 +23,17 @@ class TestViewsPosts(TestCase):
             group=TestViewsPosts.group,
             text='Тестовый пост более 15 символов',
         )
-        cls.post2 = Post.objects.create(
-            author=TestViewsPosts.user,
-            text='Тестовый пост более 15 символов #2',
+        cls.extra_group = Group.objects.create(
+            title='Тестовая группа',
+            slug='test_slug_extra',
+            description='Тестовое описание',
         )
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.authorized_client = Client()
         self.authorized_client.force_login(TestViewsPosts.user)
 
-    def test_correct_templates(self):
+    def test_correct_templates(self) -> None:
         """Обращение по namespace:name возвращают правильный шаблон"""
         response_expected = {
             reverse('posts:index'): 'posts/index.html',
@@ -58,7 +59,7 @@ class TestViewsPosts(TestCase):
                     msg_prefix='Вызывается не тот шаблон!',
                 )
 
-    def correct_page_obj_first_obj(self, context):
+    def correct_page_obj_first_obj(self, context) -> None:
         """Проверка соотвествия поста на странице"""
         fields_to_check = {
             context.author.username: TestViewsPosts.user.username,
@@ -69,7 +70,7 @@ class TestViewsPosts(TestCase):
             with self.subTest(expected=expected):
                 self.assertEqual(field, expected)
 
-    def test_index_correct_context(self):
+    def test_index_context(self) -> None:
         """Шаблон index сформирован с правильным контекстом."""
         first_object = self.authorized_client.get(
             reverse('posts:index')
@@ -77,7 +78,7 @@ class TestViewsPosts(TestCase):
 
         self.correct_page_obj_first_obj(first_object)
 
-    def test_group_list_page_show_correct_context(self):
+    def test_group_list_context(self) -> None:
         """Проверка правильности контекста для group_list"""
         first_object = self.authorized_client.get(
             reverse(
@@ -85,7 +86,6 @@ class TestViewsPosts(TestCase):
             )
         ).context['page_obj'][0]
         self.correct_page_obj_first_obj(first_object)
-        self.assertNotEqual(TestViewsPosts.post2.group, TestViewsPosts.group)
         self.assertEqual(
             self.authorized_client.get(
                 reverse(
@@ -96,7 +96,7 @@ class TestViewsPosts(TestCase):
             TestViewsPosts.group,
         )
 
-    def test_profile_correct_context(self):
+    def test_profile_context(self) -> None:
         """Проверка правильности контекста для profile"""
         first_object = self.authorized_client.get(
             reverse(
@@ -115,7 +115,7 @@ class TestViewsPosts(TestCase):
             TestViewsPosts.user,
         )
 
-    def test_post_detail(self):
+    def test_post_detail(self) -> None:
         """Проверка правильности контекста для post_detail"""
         object = self.authorized_client.get(
             reverse(
@@ -124,9 +124,8 @@ class TestViewsPosts(TestCase):
             )
         ).context['post']
         self.assertEqual(object, TestViewsPosts.post)
-        self.assertNotEqual(object, TestViewsPosts.post2)
 
-    def correct_fields_post_form(self, form):
+    def correct_fields_post_form(self, form) -> None:
         """Проверка соответствия полей для формы"""
         form_fields = {
             'text': forms.fields.CharField,
@@ -137,19 +136,61 @@ class TestViewsPosts(TestCase):
                 form_field = form.fields[value]
                 self.assertIsInstance(form_field, expected)
 
-    def test_create_post(self):
+    def test_create_post(self) -> None:
         """Проверка правильности контекста для create_post"""
         form = self.authorized_client.get(
             reverse('posts:post_create')
         ).context['form']
         self.correct_fields_post_form(form)
 
-    def test_post_edit(self):
+    def test_post_edit(self) -> None:
         """Проверка правильности контекста для post_edit"""
         form = self.authorized_client.get(
             reverse('posts:post_edit', kwargs={'pk': TestViewsPosts.post.pk})
         ).context['form']
         self.correct_fields_post_form(form)
-        self.assertEqual(self.authorized_client.get(
-            reverse('posts:post_edit', kwargs={'pk': TestViewsPosts.post.pk})
-        ).context['is_edit'], True)
+        self.assertEqual(
+            self.authorized_client.get(
+                reverse(
+                    'posts:post_edit', kwargs={'pk': TestViewsPosts.post.pk}
+                )
+            ).context['is_edit'],
+            True,
+        )
+
+    def test_extra_check(self) -> None:
+        """Проверка, что уникальный пост попадает на нужные страницы"""
+        self.assertEqual(
+            Post.objects.filter(pk=TestViewsPosts.post.pk).exists(), True
+        )
+        response = {
+            'index': reverse('posts:index'),
+            'profile': reverse(
+                'posts:profile',
+                kwargs={'username': TestViewsPosts.user.username},
+            ),
+            'group_list': reverse(
+                'posts:group_list', kwargs={'slug': TestViewsPosts.group.slug}
+            ),
+        }
+        for value in response.values():
+            with self.subTest(value=value):
+                self.assertEqual(
+                    self.authorized_client.get(value).context['page_obj'][0],
+                    TestViewsPosts.post,
+                    msg=f'{value}',
+                )
+
+        self.assertEqual(
+            len(
+                (
+                    self.authorized_client.get(
+                        reverse(
+                            'posts:group_list',
+                            kwargs={'slug': TestViewsPosts.extra_group.slug},
+                        ),
+                    )
+                ).context['page_obj']
+            ),
+            0,
+        )

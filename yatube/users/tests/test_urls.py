@@ -8,7 +8,7 @@ User = get_user_model()
 
 class UsersURLTest(TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         super().setUpClass()
         cls.user = User.objects.create_user(username='auth')
 
@@ -17,7 +17,8 @@ class UsersURLTest(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(UsersURLTest.user)
 
-    def test_urls_is_available(self):
+    def test_urls_available(self) -> None:
+        """Провека доступности адресов"""
         response_values = [
             '/auth/signup/',
             '/auth/login/',
@@ -37,7 +38,8 @@ class UsersURLTest(TestCase):
                     f'Страница {response} недоступна!',
                 )
 
-    def test_redirect_for_anonymous(self):
+    def test_redirect_anonymous(self) -> None:
+        """Проверка редиректа для анонимного пользователя"""
         response_values = {
             '/auth/password/change/form/': '/auth/login/?next=%2Fauth%2F'
             'password%2Fchange%2Fform%2F',

@@ -8,7 +8,7 @@ User = get_user_model()
 
 class PostModelTest(TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         super().setUpClass()
         cls.user = User.objects.create_user(username='auth')
         cls.group = Group.objects.create(
@@ -21,7 +21,7 @@ class PostModelTest(TestCase):
             text='Тестовый пост более 15 символов',
         )
 
-    def test_help_text(self):
+    def test_help_text(self) -> None:
         """help_text в полях совпадает с ожидаемым."""
         task = PostModelTest.post
         field_help_texts = {
@@ -34,7 +34,8 @@ class PostModelTest(TestCase):
                     task._meta.get_field(value).help_text, expected
                 )
 
-    def test_object_name_is_correct_field(self):
+    def test_str_method(self) -> None:
+        """Проверка метода __str__"""
         group = PostModelTest.group
         post = PostModelTest.post
         field_title = {

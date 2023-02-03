@@ -18,7 +18,6 @@ class Group(models.Model):
 
 
 class Post(models.Model):
-
     text = models.TextField('текст поста', help_text='Текст нового поста')
     pub_date = models.DateTimeField('время публикации', auto_now_add=True)
     author = models.ForeignKey(

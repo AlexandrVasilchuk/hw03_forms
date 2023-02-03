@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('posts', '0003_alter_post_options_alter_group_slug_and_more'),
     ]

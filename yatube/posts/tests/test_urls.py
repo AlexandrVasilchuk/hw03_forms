@@ -10,7 +10,7 @@ User = get_user_model()
 
 class PostURLTest(TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         super().setUpClass()
         cls.user = User.objects.create_user(username='auth')
         cls.group = Group.objects.create(
@@ -24,12 +24,12 @@ class PostURLTest(TestCase):
             text='Тестовый пост более 15 символов',
         )
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(PostURLTest.user)
 
-    def test_exists_at_desired_location(self):
+    def test_pages_available(self) -> None:
         """Проверка доступности страниц по указанным адресам для всех"""
         response_values = {
             self.guest_client.get(''): HTTPStatus.OK,
@@ -47,7 +47,7 @@ class PostURLTest(TestCase):
                     'Страница не доступна всем по нужному адресу!',
                 )
 
-    def test_redirect_for_anonymous(self):
+    def test_redirect_for_anonymous(self) -> None:
         """Проверка редиректа анонимного пользователя"""
         response_values = {
             self.guest_client.get(
@@ -65,7 +65,7 @@ class PostURLTest(TestCase):
                     msg_prefix='Редирект работает неправильно!',
                 )
 
-    def test_available_authorized_users(self):
+    def test_available_allowed_pages(self) -> None:
         """Проверка доступности страницы для авторизованного"""
         response_values = {
             self.authorized_client.get('/create/'): HTTPStatus.OK,
@@ -78,14 +78,16 @@ class PostURLTest(TestCase):
                     'Страницы недоступны авторизованным пользователям!',
                 )
 
-    def test_author_available(self):
+    def test_author_available(self) -> None:
+        """Проверка достуности страницы для автора поста"""
         response = self.authorized_client.get(
             f'/posts/{PostURLTest.post.pk}/edit/'
         )
         value = HTTPStatus.OK
         self.assertEqual(response.status_code, value)
 
-    def test_not_author_available(self):
+    def test_redirect_not_author(self) -> None:
+        """Проверка редиректа гостя при попытке изменить пост"""
         self.not_author = User.objects.create_user(username='_')
         self.authorized_client.force_login(self.not_author)
         response = self.authorized_client.get(
@@ -94,14 +96,15 @@ class PostURLTest(TestCase):
         value = f'/posts/{PostURLTest.post.pk}/'
         self.assertRedirects(response, value)
 
-    def test_is_template_available(self):
+    def test_template_available(self) -> None:
+        """Проверка обращение по url использовает верный шаблон"""
         response_values = {
             '': 'posts/index.html',
             '/create/': 'posts/create_post.html',
             '/group/test_group_slug/': 'posts/group_list.html',
             f'/posts/{PostURLTest.post.pk}/': 'posts/post_detail.html',
             f'/posts/{PostURLTest.post.pk}/edit/': 'posts/create_post.html',
-            f'/profile/auth/': 'posts/profile.html',
+            '/profile/auth/': 'posts/profile.html',
         }
         for response, value in response_values.items():
             with self.subTest(value=value):

@@ -1,13 +1,14 @@
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.contrib.auth import get_user_model
 from django import forms
+from django.contrib.auth import get_user_model
+from django.test import Client, TestCase
+from django.urls import reverse
+
 User = get_user_model()
 
 
 class TestUsersViews(TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         super().setUpClass()
         cls.user = User.objects.create_user(username='auth')
 
@@ -15,7 +16,8 @@ class TestUsersViews(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(TestUsersViews.user)
 
-    def test_correct_templates(self):
+    def test_correct_templates(self) -> None:
+        """Проверка использования правильных шаблонов через namespace:name"""
         response_expected = {
             reverse(
                 'users:password_change_form'
@@ -49,7 +51,7 @@ class TestUsersViews(TestCase):
                     msg_prefix=f'Ошибка, ожидался шаблон {expected}',
                 )
 
-    def test_correct_context(self):
+    def test_context(self) -> None:
         """Проверка правильности контекста для signup"""
         response = self.authorized_client.get(reverse('users:signup'))
         form_fields = {
@@ -60,4 +62,6 @@ class TestUsersViews(TestCase):
         }
         for value, expected in form_fields.items():
             with self.subTest(field=value):
-                self.assertIsInstance(response.context['form'].fields[value], expected)
+                self.assertIsInstance(
+                    response.context['form'].fields[value], expected
+                )
